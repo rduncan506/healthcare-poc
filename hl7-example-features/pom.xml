@@ -29,21 +29,34 @@
 
   <artifactId>hl7-example-features</artifactId>
   
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   
-  <name>HL7 Example: Features XML File</name>
+  <name>Health Care POC: Features XML File</name>
 
   <build>
     <defaultGoal>install</defaultGoal>
 
     <resources>
       <resource>
-        <directory>${project.basedir}/src/main/resources</directory>
+        <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
     </resources>
 
     <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>filter</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>resources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>

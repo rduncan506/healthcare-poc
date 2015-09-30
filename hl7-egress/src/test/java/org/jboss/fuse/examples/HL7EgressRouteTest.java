@@ -17,23 +17,29 @@
 package org.jboss.fuse.examples;
 
 import org.apache.activemq.broker.BrokerService;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
+import org.apache.camel.builder.NotifyBuilder;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import java.util.concurrent.TimeUnit;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath*:/META-INF/spring/*.xml"})
-public class HL7RouteTest {
+public class HL7EgressRouteTest {
 
-    @Produce(uri = "netty4:tcp://127.0.0.1:8888?sync=true&decoder=#hl7decoder&encoder=#hl7encoder")
-    private ProducerTemplate hl7TcpProducer;
+    @Autowired(required=true)
+    private CamelContext camelCtx;
+
+    @Produce(uri = "activemq:org.jboss.fuse.hl7.consumer1")
+    private ProducerTemplate activeMQProducer;
 
     private static BrokerService broker;
 
@@ -64,9 +70,10 @@ public class HL7RouteTest {
     }
 
     @Test
-    public void testHl7TcpRouteValidMessage() throws Exception {
-        String resp = hl7TcpProducer.requestBody((Object) createValidHl7Message(), String.class);
-        System.out.println(resp);
+    public void testSendHL7ToActiveMQMessage() throws Exception {
+        NotifyBuilder notify = new NotifyBuilder(camelCtx).whenCompleted(1).create();
+        activeMQProducer.sendBody(createValidHl7Message());
+        notify.matches(5000, TimeUnit.MILLISECONDS);
     }
 
 }

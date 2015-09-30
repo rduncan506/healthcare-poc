@@ -37,12 +37,10 @@
   </properties>
 
   <modules>
-    <module>hl7-example-camel</module>
     <module>hl7-example-features</module>
     <module>hl7-ingress</module>
     <module>hl7-egress</module>
     <module>hl7-transform-1</module>
-    <module>hl7-transform-2</module>
     <module>stub-services</module>
   </modules>
 

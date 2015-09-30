@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (C) Red Hat, Inc.
+  ~ http://www.redhat.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+  <bean id="hl7encoder" class="org.apache.camel.component.hl7.HL7MLLPNettyEncoderFactory">
+    <property name="charset" value="iso-8859-1"/>
+    <property name="convertLFtoCR" value="true"/>
+  </bean>
+
+  <bean id="hl7decoder" class="org.apache.camel.component.hl7.HL7MLLPNettyDecoderFactory">
+    <property name="charset" value="iso-8859-1"/>
+    <property name="convertLFtoCR" value="true"/>
+  </bean>
+
+  <camelContext xmlns="http://camel.apache.org/schema/spring">
+
+    <onException>
+      <exception>java.lang.Exception</exception>
+      <redeliveryPolicy maximumRedeliveries="2"/>
+    </onException>
+
+    <route id="route.egress.main">
+      <from uri="activemq:queue:org.jboss.fuse.hl7.consumer1"/>
+      <transacted/>
+      <log message="new message from queue"/>
+      <wireTap uri="direct:auditToFileSystem"/>
+      <to uri="direct:sendHL7"/>
+    </route>
+
+    <route id="route.egress.out.tcp">
+      <from uri="direct:sendHL7"/>
+      <log message="sending message: ${body}"/>
+      <to uri="netty4:tcp://127.0.0.1:9999?sync=true&amp;decoder=#hl7decoder&amp;encoder=#hl7encoder"/>
+    </route>
+
+    <route id="route.egress.audit.filesystem">
+      <from uri="direct:auditToFileSystem"/>
+      <log message="logging to file system..."/>
+      <to uri="file://target/audit?fileName=incoming-audit-${date:now:yyyyMMdd-HH:mm:ss}.hl7" />
+    </route>
+
+  </camelContext>
+
+  <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
+    <property name="brokerURL" value="tcp://localhost:61616"/>
+    <property name="userName" value="admin"/>
+    <property name="password" value="admin"/>
+  </bean>
+
+  <bean id="jmsTransactionManager" class="org.springframework.jms.connection.JmsTransactionManager">
+    <property name="connectionFactory" ref="connectionFactory"/>
+  </bean>
+
+  <bean id="PROPAGATION_REQUIRED" class="org.apache.camel.spring.spi.SpringTransactionPolicy">
+    <property name="transactionManager" ref="jmsTransactionManager"/>
+    <property name="propagationBehaviorName" value="PROPAGATION_REQUIRED"/>
+  </bean>
+
+  <bean id="activemq" class="org.apache.activemq.camel.component.ActiveMQComponent">
+    <property name="connectionFactory" ref="connectionFactory"/>
+    <property name="transactionManager" ref="jmsTransactionManager"/>
+  </bean>
+</beans>

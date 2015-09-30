@@ -10,6 +10,25 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>hl7-transform-1</artifactId>
+  <packaging>jar</packaging>
   <name>Health Care POC: Transformer 1</name>
 
+  <build>
+    <plugins>
+      <!-- Camel plugin to be able to run the routes outside of a camel container-->
+      <plugin>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- bundle plugin to make the jars osgi-compatible-->
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

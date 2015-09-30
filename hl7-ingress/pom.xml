@@ -10,6 +10,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>hl7-ingress</artifactId>
+  <packaging>bundle</packaging>
   <name>Health Care POC: Ingress of HL7 Messages</name>
   <description>How to receive or ingest HL7 formatted messages over TCP/MLLP</description>
 

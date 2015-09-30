@@ -11,5 +11,51 @@
 
   <artifactId>stub-services</artifactId>
   <name>Health Care POC: Stub services</name>
+  <dependencies>
+    <!-- Core camel libs-->
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-spring</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-hl7</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-netty4</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
 
+    <!-- Need access to the HAPI libs in an OSGI container-->
+    <dependency>
+      <groupId>ca.uhn.hapi</groupId>
+      <artifactId>hapi-osgi-base</artifactId>
+    </dependency>
+
+    <!-- Logging APIs-->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
+  </dependencies>
+
+
+  <build>
+    <plugins>
+      <!-- Camel plugin to be able to run the routes outside of a camel container-->
+      <plugin>
+        <groupId>org.apache.camel</groupId>
+        <artifactId>camel-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>
