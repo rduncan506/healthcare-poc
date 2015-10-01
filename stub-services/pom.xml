@@ -11,6 +11,9 @@
 
   <artifactId>stub-services</artifactId>
   <name>Health Care POC: Stub services</name>
+  <properties>
+    <fabric8.ignoreProject>true</fabric8.ignoreProject>
+  </properties>
   <dependencies>
     <!-- Core camel libs-->
     <dependency>

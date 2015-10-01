@@ -10,9 +10,15 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>hl7-transform-1</artifactId>
-  <packaging>jar</packaging>
+  <packaging>bundle</packaging>
   <name>Health Care POC: Transformer 1</name>
 
+  <properties>
+    <fabric8.profile>healthcare-poc.hl7transform</fabric8.profile>
+    <fabric8.parentProfiles>feature-camel</fabric8.parentProfiles>
+    <fabric8.features>camel-spring camel-hl7 camel-netty4</fabric8.features>
+    <fabric8.bundles>mvn:${project.parent.groupId}/hl7-transform-1/${project.parent.version}</fabric8.bundles>
+  </properties>
   <build>
     <plugins>
       <!-- Camel plugin to be able to run the routes outside of a camel container-->
