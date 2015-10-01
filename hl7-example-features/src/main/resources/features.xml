@@ -23,10 +23,10 @@
   <repository>mvn:org.apache.camel.karaf/apache-camel/${camel.version}/xml/features</repository>
   
   <feature name='hl7-example-all' version='${project.version}'>
-    <feature version="${camel-version}">camel-core</feature>
-    <feature version="${camel-version}">camel-spring</feature>
-    <feature version="${camel-version}">camel-hl7</feature>
-    <feature version="${camel-version}">camel-netty4</feature>
+    <feature version="${camel-version-range}">camel-core</feature>
+    <feature version="${camel-version-range}">camel-spring</feature>
+    <feature version="${camel-version-range}">camel-hl7</feature>
+    <feature version="${camel-version-range}">camel-netty4</feature>
     <bundle>mvn:ca.uhn.hapi/hapi-osgi-base/${hapi.version}</bundle>
     <bundle>mvn:${project.groupId}/hl7-ingress/${project.version}</bundle>
     <bundle>mvn:${project.groupId}/hl7-egress/${project.version}</bundle>

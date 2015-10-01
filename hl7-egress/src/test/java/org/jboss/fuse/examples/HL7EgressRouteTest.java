@@ -71,7 +71,7 @@ public class HL7EgressRouteTest {
 
     @Test
     public void testSendHL7ToActiveMQMessage() throws Exception {
-        NotifyBuilder notify = new NotifyBuilder(camelCtx).whenCompleted(1).create();
+        NotifyBuilder notify = new NotifyBuilder(camelCtx).whenCompleted(2).create();
         activeMQProducer.sendBody(createValidHl7Message());
         notify.matches(5000, TimeUnit.MILLISECONDS);
     }

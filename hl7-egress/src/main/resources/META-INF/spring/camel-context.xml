@@ -31,6 +31,8 @@
     <property name="convertLFtoCR" value="true"/>
   </bean>
 
+  <bean id="LFtoCR" class="org.apache.camel.component.hl7.HL7" factory-method="convertLFToCR"/>
+
   <camelContext xmlns="http://camel.apache.org/schema/spring">
 
     <onException>
@@ -46,10 +48,20 @@
       <to uri="direct:sendHL7"/>
     </route>
 
+    <route id="route.egress.in.file">
+      <from uri="file://target/in"/>
+      <convertBodyTo type="java.lang.String"/>
+      <to uri="direct:sendHL7"/>
+    </route>
+
     <route id="route.egress.out.tcp">
       <from uri="direct:sendHL7"/>
       <log message="sending message: ${body}"/>
-      <to uri="netty4:tcp://127.0.0.1:9999?sync=true&amp;decoder=#hl7decoder&amp;encoder=#hl7encoder"/>
+      <transform>
+        <ref>LFtoCR</ref>
+      </transform>
+      <to uri="netty4:tcp://127.0.0.1:9999?sync=true&amp;requestTimeout=5000&amp;decoder=#hl7decoder&amp;encoder=#hl7encoder"/>
+      <log message="response: ${body}"/>
     </route>
 
     <route id="route.egress.audit.filesystem">
