@@ -14,17 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.test;
-
-import org.apache.camel.Body;
+package org.jboss.fuse.examples;
 
 /**
  * Created by ceposta 
  * <a href="http://christianposta.com/blog>http://christianposta.com/blog</a>.
  */
-public class Foo {
-
-    public void process(@Body Object body) {
-        System.out.println("type: " + body.getClass());
-    }
+public class FailDemoException extends RuntimeException{
 }

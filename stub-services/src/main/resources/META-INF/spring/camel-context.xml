@@ -33,21 +33,36 @@
 
   <bean id="ACK" class="org.apache.camel.component.hl7.HL7" factory-method="ack"/>
 
+  <bean id="failDemoException" class="org.jboss.fuse.examples.FailDemoException"/>
+
   <camelContext xmlns="http://camel.apache.org/schema/spring">
+    <onException>
+      <exception>org.jboss.fuse.examples.FailDemoException</exception>
+      <handled>
+        <constant>true</constant>
+      </handled>
+      <log  message="WOAH! Have an exception"/>
+      <transform>
+        <ref>ACK</ref>
+      </transform>
+    </onException>
+
     <route id="route.ingress.in.tcp">
-      
       <from uri="netty4:tcp://127.0.0.1:9999?sync=true&amp;decoder=#hl7decoder&amp;encoder=#hl7encoder"/>
-      
       <log message="HL7 Request: ${body}"/>
-      
-      <unmarshal>
-        <hl7 validate="true"/>
-      </unmarshal>
+      <setHeader headerName="applicationName">
+        <terser>MSH-3-1</terser>
+      </setHeader>
+      <log message="Application name: ${header.applicationName}"/>
       <choice>
         <when>
-          <simple>${body?.MSH?.sendingApplication?.namespaceID} == 'FAILDEMO'</simple>
+          <simple>${header.applicationName} == 'FAILDEMO'</simple>
           <log message="yep, will fail this!"/>
+          <throwException ref="failDemoException"/>
         </when>
+        <otherwise>
+          <log message="Demo succeeds!"/>
+        </otherwise>
       </choice>
       <transform>
         <ref>ACK</ref>
