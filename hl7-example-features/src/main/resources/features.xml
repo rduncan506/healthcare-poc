@@ -15,7 +15,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<features name="hl7-example"
+<features name="healthcare-poc"
           xmlns="http://karaf.apache.org/xmlns/features/v1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.0.0 http://karaf.apache.org/xmlns/features/v1.0.0">
@@ -29,6 +29,7 @@
     <feature version="${camel-version}">camel-netty4</feature>
     <bundle>mvn:ca.uhn.hapi/hapi-osgi-base/${hapi.version}</bundle>
     <bundle>mvn:${project.groupId}/hl7-ingress/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/hl7-egress/${project.version}</bundle>
   </feature>
   
 </features>

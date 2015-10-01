@@ -34,6 +34,7 @@
     <hapi.version>2.2</hapi.version>
     <camel-version>2.15.1.redhat-620133</camel-version>
     <activemq-version>5.11.0.redhat-620133</activemq-version>
+    <fabric8-version>1.2.0.redhat-133</fabric8-version>
   </properties>
 
   <modules>
@@ -66,6 +67,11 @@
           <groupId>org.codehaus.mojo</groupId>
           <artifactId>build-helper-maven-plugin</artifactId>
           <version>1.7</version>
+        </plugin>
+        <plugin>
+          <groupId>io.fabric8</groupId>
+          <artifactId>fabric8-maven-plugin</artifactId>
+          <version>${fabric8-version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -142,4 +148,12 @@
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+
+  <distributionManagement>
+    <repository>
+      <id>local-repository</id>
+      <name>Local Repository</name>
+      <url>file://~/.m2/repository</url>
+    </repository>
+  </distributionManagement>
 </project>

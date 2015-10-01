@@ -57,7 +57,7 @@
 
     <route id="route.ingress.audit.filesystem">
       <from uri="direct:auditToFileSystem"/>
-      <to uri="file://target/audit?fileName=incoming-audit-${date:now:yyyyMMdd-HH:mm:ss}.hl7" />
+      <to uri="file://target/audit/ingress?fileName=incoming-audit-${date:now:yyyyMMdd-HH:mm:ss}.hl7" />
     </route>
 
   </camelContext>
