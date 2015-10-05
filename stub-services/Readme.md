@@ -1,0 +1,2 @@
+## Stub services
+You can use HL7 Test Panel, Nule, or 7edit to stand up stub services for interaction with HL7 endpoints. This module let's you stand up an HL7 stub service that can be triggerd to deliver Nack's back to the caller
