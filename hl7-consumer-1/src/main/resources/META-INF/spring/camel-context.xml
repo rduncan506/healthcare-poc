@@ -33,7 +33,7 @@
 
   <bean id="LFtoCR" class="org.apache.camel.component.hl7.HL7" factory-method="convertLFToCR"/>
 
-  <camelContext id="egressCamel" xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="consumer1Camel" xmlns="http://camel.apache.org/schema/spring">
     <propertyPlaceholder id="props" location="META-INF/properties/application.properties"/>
 
     <onException>
@@ -41,7 +41,7 @@
       <redeliveryPolicy maximumRedeliveries="2"/>
     </onException>
 
-    <route id="route.egress.main">
+    <route id="route.consumer1.main">
       <from uri="{{camel.activemq.endpoint}}"/>
       <transacted/>
       <log message="new message from queue"/>
@@ -49,13 +49,13 @@
       <to uri="direct:sendHL7"/>
     </route>
 
-    <route id="route.egress.in.file">
+    <route id="route.consumer1.in.file">
       <from uri="file://target/in"/>
       <convertBodyTo type="java.lang.String"/>
       <to uri="direct:sendHL7"/>
     </route>
 
-    <route id="route.egress.out.tcp">
+    <route id="route.consumer1.out.tcp">
       <from uri="direct:sendHL7"/>
       <log message="sending message: ${body}"/>
       <transform>
@@ -65,7 +65,7 @@
       <log message="response: ${body}"/>
     </route>
 
-    <route id="route.egress.audit.filesystem">
+    <route id="route.consumer1.audit.filesystem">
       <from uri="direct:auditToFileSystem"/>
       <log message="logging to file system..."/>
       <to uri="file://target/audit/egress?fileName=incoming-audit-${date:now:yyyyMMdd-HH:mm:ss}.hl7" />

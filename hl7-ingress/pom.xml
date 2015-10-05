@@ -20,7 +20,7 @@
     <fabric8.profile>healthcare-poc.hl7ingress</fabric8.profile>
     <fabric8.parentProfiles>feature-camel</fabric8.parentProfiles>
     <fabric8.features>camel-spring camel-hl7 camel-netty4</fabric8.features>
-    <fabric8.bundles>mvn:${project.parent.groupId}/hl7-ingress/${project.parent.version}</fabric8.bundles>
+    <fabric8.bundles>mvn:${project.parent.groupId}/${project.artifactId}/${project.parent.version}</fabric8.bundles>
   </properties>
 
   <dependencies>

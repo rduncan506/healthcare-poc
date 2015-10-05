@@ -29,7 +29,8 @@
     <feature version="${camel-version-range}">camel-netty4</feature>
     <bundle>mvn:ca.uhn.hapi/hapi-osgi-base/${hapi.version}</bundle>
     <bundle>mvn:${project.groupId}/hl7-ingress/${project.version}</bundle>
-    <bundle>mvn:${project.groupId}/hl7-egress/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/hl7-consumer-1/${project.version}</bundle>
+    <bundle>mvn:${project.groupId}/hl7-transform-1/${project.version}</bundle>
   </feature>
   
 </features>

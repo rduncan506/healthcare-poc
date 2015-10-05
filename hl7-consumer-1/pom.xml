@@ -9,18 +9,18 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
-  <artifactId>hl7-egress</artifactId>
+  <artifactId>hl7-consumer-1</artifactId>
   <packaging>bundle</packaging>
-  <name>Health Care POC: Egress of HL7 Messages</name>
+  <name>Health Care POC: Consumer 1 of HL7 Messages</name>
   <description>How to send HL7 formatted messages over TCP/MLLP</description>
 
   <properties>
     <environment.activemq.uri>activemq:queue:org.jboss.fuse.hl7.consumer1</environment.activemq.uri>
     <!-- fabric8 configurations-->
-    <fabric8.profile>healthcare-poc.hl7egress</fabric8.profile>
+    <fabric8.profile>healthcare-poc.hl7consumer.1</fabric8.profile>
     <fabric8.parentProfiles>feature-camel</fabric8.parentProfiles>
     <fabric8.features>camel-spring camel-hl7 camel-netty4</fabric8.features>
-    <fabric8.bundles>mvn:${project.parent.groupId}/hl7-egress/${project.parent.version}</fabric8.bundles>
+    <fabric8.bundles>mvn:${project.parent.groupId}/${project.artifactId}/${project.parent.version}</fabric8.bundles>
   </properties>
   <dependencies>
     <!-- Core camel libs-->

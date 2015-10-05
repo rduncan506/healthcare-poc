@@ -37,15 +37,15 @@ import java.util.concurrent.TimeUnit;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath*:/META-INF/spring/*.xml"})
-public class HL7EgressRouteTest {
+public class HL7ConsumerRouteTest {
 
     @Autowired(required=true)
     private CamelContext testRoutes;
 
     @Autowired(required=true)
-    private CamelContext egressCamel;
+    private CamelContext consumer1Camel;
 
-    @Produce(uri = "activemq:org.jboss.fuse.hl7.consumer1")
+    @Produce(uri = "{{camel.activemq.endpoint}}")
     private ProducerTemplate activeMQProducer;
 
     @EndpointInject(uri = "mock:hl7Mock")
@@ -96,7 +96,7 @@ public class HL7EgressRouteTest {
     public void testSendHL7ToActiveMQMessage() throws Exception {
         hl7Mock.expectedMessageCount(1);
         fileMock.expectedMessageCount(1);
-        NotifyBuilder notify = new NotifyBuilder(egressCamel).whenCompleted(2).create();
+        NotifyBuilder notify = new NotifyBuilder(consumer1Camel).whenCompleted(2).create();
         activeMQProducer.sendBody(createValidHl7Message());
         notify.matches(2, TimeUnit.SECONDS);
 
