@@ -19,7 +19,7 @@ With these building blocks, we can build a powerful physical deployment that has
 ## JBoss Fuse 
 For this POC, we will build out the following architecture locally (on our laptops) but do so using process-isolation constructs to illustrate a physical deployment. Physical deployments can very based on resources you have (VMs, CPU//mem, etc). For illustration purposes, this is the architecture we will start with for this POC:
 
-![sample architecture](doc/images/example-arch.png)
+![sample architecture](docs/images/example-arch.png)
 
 In this architecture we see these relevant components:
 
@@ -29,9 +29,10 @@ In this architecture we see these relevant components:
 
 Note, that this is the use case depicted in this POC, though is intended to help the reader understand the components and concepts at a high level. A typical deployment in a production-like setting is NOT being depicted above, however, you may be able to deduct what a more resilient environment may look like based on the pieces. Also note, with Fuse and how we've architected these services, we can choose *how* we want to deploy. In this POC we've chosen to deploy the components into individual processes but this is not a technical rule. We can deploy them all into the same process as well (though it may or may not be recommended depending on your desired architecture).
 
+### Fuse insight!
 Another alternative deployment depicted by this POC is the following:
 
-![sample architecture](doc/images/insight-arch.png)
+![sample architecture](docs/images/insight-arch.png)
 
 In this depiction, we have the same above deployment of Fuse and ActiveMQ, but we also have 3 additional nodes which provide a highly-scalable, centralized logging and insight framework built on top of Elasticsearch. With Fuse, we can spin up "Fuse Insight" nodes and have all logging dumped into one spot and then use the Fuse web console to query, chart, and graph the results of calls/transactions that have propogated through the platform including debugging and SLA diagnosis. 
 
