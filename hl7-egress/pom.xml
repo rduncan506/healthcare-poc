@@ -15,6 +15,7 @@
   <description>How to send HL7 formatted messages over TCP/MLLP</description>
 
   <properties>
+    <environment.activemq.uri>activemq:queue:org.jboss.fuse.hl7.consumer1</environment.activemq.uri>
     <!-- fabric8 configurations-->
     <fabric8.profile>healthcare-poc.hl7egress</fabric8.profile>
     <fabric8.parentProfiles>feature-camel</fabric8.parentProfiles>
@@ -70,6 +71,12 @@
   </dependencies>
 
   <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
     <plugins>
       <!-- Camel plugin to be able to run the routes outside of a camel container-->
       <plugin>
@@ -97,6 +104,13 @@
       <id>insight</id>
       <properties>
         <fabric8.parentProfiles>feature-camel insight-camel insight-elasticsearch.node</fabric8.parentProfiles>
+      </properties>
+    </profile>
+    <profile>
+      <id>fabric</id>
+      <properties>
+        <environment.activemq.uri>amq:queue:org.jboss.fuse.hl7.consumer1</environment.activemq.uri>
+        <fabric8.features>camel-spring camel-hl7 camel-netty4 mq-fabric-camel</fabric8.features>
       </properties>
     </profile>
   </profiles>

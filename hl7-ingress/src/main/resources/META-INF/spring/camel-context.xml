@@ -40,6 +40,7 @@
   </bean>
 
   <camelContext id="ingressCamel" xmlns="http://camel.apache.org/schema/spring">
+    <propertyPlaceholder id="props" location="META-INF/properties/application.properties"/>
     <route id="route.ingress.in.tcp">
       <from uri="netty4:tcp://127.0.0.1:8888?sync=true&amp;decoder=#hl7decoder&amp;encoder=#hl7encoder"/>
       <to uri="direct:hl7Direct"/>
@@ -49,7 +50,7 @@
       <from uri="direct:hl7Direct"/>
       <wireTap uri="direct:auditToFileSystem"/>
       <log message="HL7 Request: ${body}"/>
-      <inOnly uri="activemq:topic:org.jboss.fuse.hl7.event"/>
+      <inOnly uri="{{camel.activemq.endpoint}}"/>
       <transform>
         <ref>ACK</ref>
       </transform>

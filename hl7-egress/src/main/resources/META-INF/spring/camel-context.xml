@@ -34,6 +34,7 @@
   <bean id="LFtoCR" class="org.apache.camel.component.hl7.HL7" factory-method="convertLFToCR"/>
 
   <camelContext id="egressCamel" xmlns="http://camel.apache.org/schema/spring">
+    <propertyPlaceholder id="props" location="META-INF/properties/application.properties"/>
 
     <onException>
       <exception>java.lang.Exception</exception>
@@ -41,7 +42,7 @@
     </onException>
 
     <route id="route.egress.main">
-      <from uri="activemq:queue:org.jboss.fuse.hl7.consumer1"/>
+      <from uri="{{camel.activemq.endpoint}}"/>
       <transacted/>
       <log message="new message from queue"/>
       <wireTap uri="direct:auditToFileSystem"/>

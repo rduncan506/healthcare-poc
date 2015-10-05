@@ -24,8 +24,9 @@
 
 
        <camelContext id="testRoutes" xmlns="http://camel.apache.org/schema/spring">
+          <propertyPlaceholder id="props" location="META-INF/properties/application.properties"/>
               <route>
-                     <from uri="activemq:topic:org.jboss.fuse.hl7.event"/>
+                     <from uri="{{camel.activemq.endpoint}}"/>
                      <to uri="mock:messagingMock"/>
               </route>
               <route>
