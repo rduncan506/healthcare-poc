@@ -218,3 +218,5 @@ Try running the test from the HAPI Test Panel again. Now navigate to `http://loc
 Explore the "ActiveMQ" tab and the queues/topics involved. You should see some destinations have enqueued the HL7 messages from our test.
 
 We will dive deeper into this section when [we dig into Fabric deployments](deploy-fabric.md)
+
+Feel free to explore the rest of the project and how things fit together. 
