@@ -18,10 +18,13 @@ package org.jboss.fuse.examples;
 
 import org.apache.activemq.broker.BrokerService;
 import org.apache.camel.CamelContext;
+import org.apache.camel.EndpointInject;
 import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.NotifyBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.util.FileUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.File;
 import java.util.concurrent.TimeUnit;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
@@ -36,10 +40,20 @@ import java.util.concurrent.TimeUnit;
 public class HL7EgressRouteTest {
 
     @Autowired(required=true)
-    private CamelContext camelCtx;
+    private CamelContext testRoutes;
+
+    @Autowired(required=true)
+    private CamelContext egressCamel;
 
     @Produce(uri = "activemq:org.jboss.fuse.hl7.consumer1")
     private ProducerTemplate activeMQProducer;
+
+    @EndpointInject(uri = "mock:hl7Mock")
+    private MockEndpoint hl7Mock;
+
+    @EndpointInject(uri = "mock:fileMock")
+    private MockEndpoint fileMock;
+
 
     private static BrokerService broker;
 
@@ -51,6 +65,15 @@ public class HL7EgressRouteTest {
         broker.deleteAllMessages();
         broker.start();
         broker.waitUntilStarted();
+    }
+
+    @BeforeClass
+    public static void cleanDirectories() {
+        File auditDir = new File("./target/audit");
+        if (auditDir.exists()) {
+            FileUtil.removeDir(auditDir);
+        }
+        auditDir.mkdir();
     }
 
     @AfterClass
@@ -71,9 +94,14 @@ public class HL7EgressRouteTest {
 
     @Test
     public void testSendHL7ToActiveMQMessage() throws Exception {
-        NotifyBuilder notify = new NotifyBuilder(camelCtx).whenCompleted(2).create();
+        hl7Mock.expectedMessageCount(1);
+        fileMock.expectedMessageCount(1);
+        NotifyBuilder notify = new NotifyBuilder(egressCamel).whenCompleted(2).create();
         activeMQProducer.sendBody(createValidHl7Message());
-        notify.matches(5000, TimeUnit.MILLISECONDS);
+        notify.matches(2, TimeUnit.SECONDS);
+
+        MockEndpoint.assertIsSatisfied(testRoutes, 2, TimeUnit.SECONDS);
+        hl7Mock.message(1).body().contains("FUSEDEMO|ORG|TEST");
     }
 
 }

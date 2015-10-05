@@ -17,23 +17,44 @@
 package org.jboss.fuse.examples;
 
 import org.apache.activemq.broker.BrokerService;
-import org.apache.camel.Produce;
-import org.apache.camel.ProducerTemplate;
+import org.apache.camel.*;
+import org.apache.camel.builder.NotifyBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.test.spring.CamelSpringJUnit4ClassRunner;
+import org.apache.camel.util.FileUtil;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 @RunWith(CamelSpringJUnit4ClassRunner.class)
 @ContextConfiguration({"classpath*:/META-INF/spring/*.xml"})
 public class HL7IngressRouteTest {
 
+
+    @Autowired(required=true)
+    private CamelContext testRoutes;
+
+    @Autowired(required=true)
+    private CamelContext ingressCamel;
+
     @Produce(uri = "netty4:tcp://127.0.0.1:8888?sync=true&decoder=#hl7decoder&encoder=#hl7encoder")
     private ProducerTemplate hl7TcpProducer;
+
+    @EndpointInject(uri = "mock:messagingMock")
+    private MockEndpoint messagingMock;
+
+    @EndpointInject(uri = "mock:fileMock")
+    private MockEndpoint fileMock;
 
     private static BrokerService broker;
 
@@ -45,6 +66,15 @@ public class HL7IngressRouteTest {
         broker.deleteAllMessages();
         broker.start();
         broker.waitUntilStarted();
+    }
+
+    @BeforeClass
+    public static void cleanDirectories() {
+        File auditDir = new File("./target/audit");
+        if (auditDir.exists()) {
+            FileUtil.removeDir(auditDir);
+        }
+        auditDir.mkdir();
     }
 
     @AfterClass
@@ -65,8 +95,18 @@ public class HL7IngressRouteTest {
 
     @Test
     public void testHl7TcpRouteValidMessage() throws Exception {
+
+        messagingMock.expectedMessageCount(1);
+        fileMock.expectedMessageCount(1);
+        System.out.println("hello world!");
+        NotifyBuilder notify = new NotifyBuilder(ingressCamel).whenCompleted(2).create();
         String resp = hl7TcpProducer.requestBody((Object) createValidHl7Message(), String.class);
-        System.out.println(resp);
+        assertNotNull(resp);
+        assertThat(resp, containsString("MSA|AA|MSGID12349876"));
+        notify.matches(2, TimeUnit.SECONDS);
+
+        MockEndpoint.assertIsSatisfied(testRoutes, 2, TimeUnit.SECONDS);
+
     }
 
 }

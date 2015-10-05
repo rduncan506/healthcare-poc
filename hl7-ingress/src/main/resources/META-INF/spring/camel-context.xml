@@ -39,7 +39,7 @@
     <property name="password" value="admin" />
   </bean>
 
-  <camelContext xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="ingressCamel" xmlns="http://camel.apache.org/schema/spring">
     <route id="route.ingress.in.tcp">
       <from uri="netty4:tcp://127.0.0.1:8888?sync=true&amp;decoder=#hl7decoder&amp;encoder=#hl7encoder"/>
       <to uri="direct:hl7Direct"/>

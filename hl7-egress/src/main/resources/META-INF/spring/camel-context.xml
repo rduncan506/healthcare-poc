@@ -33,7 +33,7 @@
 
   <bean id="LFtoCR" class="org.apache.camel.component.hl7.HL7" factory-method="convertLFToCR"/>
 
-  <camelContext xmlns="http://camel.apache.org/schema/spring">
+  <camelContext id="egressCamel" xmlns="http://camel.apache.org/schema/spring">
 
     <onException>
       <exception>java.lang.Exception</exception>

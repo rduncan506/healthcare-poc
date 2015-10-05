@@ -92,4 +92,13 @@
     </plugins>
   </build>
 
+  <profiles>
+    <profile>
+      <id>insight</id>
+      <properties>
+        <fabric8.parentProfiles>feature-camel insight-camel insight-elasticsearch.node</fabric8.parentProfiles>
+      </properties>
+    </profile>
+  </profiles>
+
 </project>
