@@ -21,7 +21,7 @@ Before we let Fuse Fabric manage our deployments, let's first create a Fabric co
     
 At the shell that Fuse starts up, run this command:
 
-    JBossFuse:karaf@root> fabric:create --clean --wait-for-provisioning 
+    JBossFuse:karaf@root> fabric:create --clean --wait-for-provisioning --profile fabric
     
 Wait a few moments for the JVM to transform into a fabric container. Once that's happened, navigate over to `http://localhost:8181` and login with `admin/admin`. You should see a screen similar to this (click "containers" tab if you're greeted with the welcome page first):
 
@@ -36,14 +36,6 @@ Click on the `Wiki` tab which will show you a list of `profiles` or "application
 
 Feel free to poke around and see what default applications/profiles exist out of the box.
 
-### Disable fuse-full
-When we first start up a fabric, the "root" node which holds all of the magic used by fabric to manage, configure, and version JVM containers and deployments will also be running a JBoss Fuse set of applications (ActiveMQ, CXF, camel, etc). But for the "root" node, we don't want to burden it with those things, so let's remove those pieces. With Fuse Fabric, removing functionality/modules/applications is as simple as removing profiles. Clikc the "containers" tab, then click the "root" container. You should see a screen like this:
-
-![Fabric welcome](images/fabric-root.png)
-
-Click the "full" profile and click "Remove" Wait a few moments for the root container to uninstall and re-provision itself. You may also be forced to login again. Go back and check to verify that the "full" profile was removed from the "root" container (note, due to a bug in JBoss Fuse 6.2, i had to remove that "full" profile multiple times for it to get to work :) )
-
-Once "full" profile is removed, let's click on "services" tab and then "MQ". We are going to deploy a set of ActiveMQ brokers and use the centralized configuration management to make some changes to the default broker so it works well with our use case.
 
 ## Deploying ActiveMQ
 
