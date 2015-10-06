@@ -156,4 +156,6 @@ You should see this if built successfully:
     
 Now if you go to the `Wiki` tab again, you should see our new healthcare profiles:
 
+![Fabric mq brokers containers](images/fabric-healthcare-profiels.png)
 
+Now that we have the profiles inside of Fabric, let's assign them to containers and watch them go!
