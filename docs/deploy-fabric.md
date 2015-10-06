@@ -150,4 +150,63 @@ Now if you go to the `Wiki` tab again, you should see our new healthcare profile
 
 ![Fabric mq brokers containers](images/fabric-healthcare-profiels.png)
 
-Now that we have the profiles inside of Fabric, let's assign them to containers and watch them go!
+Now that we have the profiles inside of Fabric, let's create the Ingress routes which listen for HL7 connections do the heavy lifting of receiving the message, decoding it, and putting it into a queue. Click "Create" from the "Containers" tab and fill in the container name and choose the associated profile from the profile list.
+
+![Fabric mq brokers containers](images/fabric-ingress-container.png)
+
+![Fabric mq brokers containers](images/fabric-ingress-success.png)
+
+
+After we have the ingress container, let's create the Fuse JVM that will host the "transform" modules. click "Create" from the "containers" tab to create a new Fuse JVM and we'll assign the "hl7-transform-1" profile to it:
+
+![Fabric mq brokers containers](images/fabric-transform-create.png)
+
+Do the same thing (repeat the steps of creating the JVM and assigning profiles) for the "hl7-consumer-1" profile. We should see that all of the containers eventually come up:
+
+![Fabric mq brokers containers](images/fabric-consumer-create.png)
+
+![Fabric mq brokers containers](images/fabric-all-containers.png)
+
+
+Now we have all of the pieces in place and can begin sending messages. Fire up our [HAPI Test Panel](http://hl7api.sourceforge.net/hapi-testpanel/) again and let's fire a test off to port 8888:
+
+![Fabric mq brokers containers](images/fabric-hapi-started-8888.png)
+
+![Fabric mq brokers containers](images/fabric-hapi-send.png)
+
+
+Now let's take a look at the routes and the queues. If we click the "connect to" icon next to the "transformhl7" container, we can see the Camel routes and preview what happened:
+
+![Fabric mq brokers containers](images/fabric-transform-worked.png)
+
+
+Do the same thing; open the ActiveMQ broker. You maybe be wondering which broker to open? We know we deployed an ActiveMQ master/slave topology, but which container is the master? Click on "Services" --> "MQ" and you should see the brokers deployed. The "green" broker is the active _master_ broker in the pair:
+
+![Fabric mq brokers containers](images/fabric-master-broker.png)
+
+Once you've connected to the master broker, expand the Queues and Topics part of the tree to reveal some of the destinations that were involved with that last transaction:
+
+![Fabric mq brokers containers](images/fabric-brokers-worked.png)
+
+Woah... we see the queues/topics involved, but why is there something in the DLQ? Let's take a look at the `consumerhl7` container to investigate why. Click the same "connect" icon that we found for the previous containers and connect into the `consumerhl7` container. If we scroll to the bottom of the logs page we see this:
+
+![Fabric mq brokers containers](images/fabric-consumer-logs.png)
+
+Things were failing!! We also see some retry logic in there... which is something we can do with camel and if you take a closer look at the routes you'll see that in there. Let's expand the ERROR log statement and see what happened:
+
+
+![Fabric mq brokers containers](images/fabric-expand-log.png)
+
+OH! we didn't have a stub listener for this message. The "Consumer" will actually receive a message from ActiveMQ and then try to call out to an external HL7 endpoint. Let's start one of those up with the HAPI test panel. 
+
+> Also note, the [stub-services](../stub-services) project contains a stub service that can be used here too
+
+Go to the HAPI Test Panel and start a stub service that receives messages and sends back an ACK. Make sure to open the port with `9999`:
+
+![Fabric mq brokers containers](images/fabric-hapi-receive.png)
+
+Now try to send the message again, and you should see it go through:
+
+![Fabric mq brokers containers](images/fabric-hapi-full-send.png)
+
+
