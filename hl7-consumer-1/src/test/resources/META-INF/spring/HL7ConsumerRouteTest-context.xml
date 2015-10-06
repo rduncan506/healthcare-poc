@@ -34,6 +34,7 @@
 
 
        <camelContext id="testRoutes" xmlns="http://camel.apache.org/schema/spring">
+         <propertyPlaceholder id="props" location="META-INF/properties/application.properties"/>
               <route>
                      <from uri="netty4:tcp://127.0.0.1:9999?sync=true&amp;decoder=#hl7decoder&amp;encoder=#hl7encoder"/>
                      <to uri="mock:hl7Mock"/>

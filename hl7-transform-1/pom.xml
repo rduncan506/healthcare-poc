@@ -14,7 +14,7 @@
   <name>Health Care POC: Transformer 1</name>
 
   <properties>
-    <camel.activemq.endpoint.event>activemq:queue:org.jboss.fuse.hl7.event</camel.activemq.endpoint.event>
+    <camel.activemq.endpoint.event>activemq:queue:Consumer.1.VirtualTopic.org.jboss.fuse.hl7.event</camel.activemq.endpoint.event>
     <camel.activemq.endpoint.consumer1>activemq:queue:org.jboss.fuse.hl7.consumer1</camel.activemq.endpoint.consumer1>
     <fabric8.profile>healthcare-poc.hl7transform.1</fabric8.profile>
     <fabric8.parentProfiles>feature-camel</fabric8.parentProfiles>
@@ -99,7 +99,7 @@
     <profile>
       <id>fabric</id>
       <properties>
-        <camel.activemq.endpoint.event>amq:queue:org.jboss.fuse.hl7.event</camel.activemq.endpoint.event>
+        <camel.activemq.endpoint.event>amq:queue:Consumer.1.VirtualTopic.org.jboss.fuse.hl7.event</camel.activemq.endpoint.event>
         <camel.activemq.endpoint.consumer1>amq:queue:org.jboss.fuse.hl7.consumer1</camel.activemq.endpoint.consumer1>
         <fabric8.features>camel-spring camel-hl7 camel-netty4 mq-fabric-camel</fabric8.features>
       </properties>
