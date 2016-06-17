@@ -23,22 +23,28 @@
 
 
   <camelContext id="transformCamel" xmlns="http://camel.apache.org/schema/spring">
-    <propertyPlaceholder id="props" location="META-INF/properties/application.properties"/>
-
-    <onException>
-      <exception>java.lang.Exception</exception>
-      <redeliveryPolicy maximumRedeliveries="2"/>
-    </onException>
-
-    <route id="route.transform1.main">
-      <from uri="{{camel.activemq.endpoint.event}}"/>
-      <log message="new message from event queue"/>
-      <log message="Doing transformation"/>
-      <log message="Sending to consumer1"/>
-      <to uri="{{camel.activemq.endpoint.consumer1}}"/>
-    </route>
-
-  </camelContext>
+  <propertyPlaceholder location="META-INF/properties/application.properties" id="props"/>
+  <onException>
+    <exception>java.lang.Exception</exception>
+    <redeliveryPolicy maximumRedeliveries="2"/>
+  </onException>
+  <route id="route.transform1.main">
+    <from uri="{{camel.activemq.endpoint.event}}"/>
+    <log message="new message from event queue RD"/>
+    <wireTap uri="direct:changeHL7Message">
+      <body>
+        <simple></simple>
+      </body>
+    </wireTap>
+    <log message="Doing transformation... ${body}"/>
+    <log message="Sending to consumer1 RD - ${body}"/>
+    <to uri="{{camel.activemq.endpoint.consumer1}}"/>
+  </route>
+  <route id="route.transform1.hl7.message">
+    <from uri="direct:changeHL7Message"/>
+    <log message="In changeHL7Message with: ${body}"/>
+  </route>
+</camelContext>
 
   <bean id="connectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
     <property name="brokerURL" value="tcp://127.0.0.1:61616"/>

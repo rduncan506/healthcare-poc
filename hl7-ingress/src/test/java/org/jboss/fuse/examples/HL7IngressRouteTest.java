@@ -92,14 +92,65 @@ public class HL7IngressRouteTest {
         hl7Message.append("PV1||O|OP^^||||4652^Paulson^Robert|||OP|||||||||9|||||||||||||||||||||||||20061019172717|20061019172718").append("\r");
         return hl7Message.toString();
     }
+    
+    private String createValidQRDMessage() {
+    	StringBuilder hl7Message = new StringBuilder();
+    	hl7Message.append("MSH|^~\\&|MYSENDER|MYRECEIVER|MYAPPLICATION||200612211200||QRY^A19|1234|P|2.4").append("\r");
+    	hl7Message.append("QRD|200612211200|R|I|GetPatient|||1^RD|0101701234|DEM||").append("\r");
+    	return hl7Message.toString();
+    }
+
+    private String createValidADTMessage() {
+    	StringBuilder hl7Message = new StringBuilder();
+    	hl7Message.append("MSH|^~\\&|||||20160216213412.809-0400||ADT^A01^ADT_A01|3001|T|2.4").append("\r");
+    	hl7Message.append("PID|||XYA6254^4^M11||AIKMAN^EMMITT||19650318|M||C|1^COWBOY WAY^^DALLAS^TX^63976-6644|GL|(474)954-9598|(573)126-9723|English|D||XYA6254001^2^M10|123456789|987654^NC|").append("\r");
+    	hl7Message.append("PV1|1|O|4E^234^A^Good Health Hospital&2.16.840.1.113883.19.3.2.3&ISO^N^N^Building 1^4^Nursing unit 4 East^1234&&2.16.840.1.113883.19.3.2.3&ISO^&2.16.840.1.113883.19.3.2.3&ISO|R|||||||||||||||SCREENING||||||||||||||||||||5|||||20150815|200808151200-0700").append("\r");
+
+    	/*
+    	 * MSH|^~\&|||||20160216213412.809-0400||ADT^A01^ADT_A01|3001|T|2.4
+PID|||XYA6254^4^M11||AIKMAN^EMMITT||19650318|M||C|1^COWBOY WAY^^DALLAS^TX^63976-6644|GL|(474)954-9598|(573)126-9723|English|D||XYA6254001^2^M10|123456789|987654^NC|
+PV1|1|O|4E^234^A^Good Health Hospital&2.16.840.1.113883.19.3.2.3&ISO^N^N^Building 1^4^Nursing unit 4 East^1234&&2.16.840.1.113883.19.3.2.3&ISO^&2.16.840.1.113883.19.3.2.3&ISO|R|||||||||||||||SCREENING||||||||||||||||||||5|||||20150815|200808151200-0700
+    	 * 
+    	 */
+    	return hl7Message.toString();
+    }
+//    @Test
+//    public void testHl7TcpRouteValidMessage() throws Exception {
+//
+//        messagingMock.expectedMessageCount(1);
+//        fileMock.expectedMessageCount(1);
+//        NotifyBuilder notify = new NotifyBuilder(ingressCamel).whenCompleted(2).create();
+//        String resp = hl7TcpProducer.requestBody((Object) createValidHl7Message(), String.class);
+//        assertNotNull(resp);
+//        assertThat(resp, containsString("MSA|AA|MSGID12349876"));
+//        notify.matches(2, TimeUnit.SECONDS);
+//
+//        MockEndpoint.assertIsSatisfied(testRoutes, 2, TimeUnit.SECONDS);
+//
+//    }
+    
+//    @Test
+//    public void testHl7TcpRouteValidQRDMessage() throws Exception {
+//
+//        messagingMock.expectedMessageCount(1);
+//        fileMock.expectedMessageCount(1);
+//        NotifyBuilder notify = new NotifyBuilder(ingressCamel).whenCompleted(2).create();
+//        String resp = hl7TcpProducer.requestBody((Object) createValidQRDMessage(), String.class);
+//        assertNotNull(resp);
+//        assertThat(resp, containsString("MSA|AA|MSGID12349876"));
+//        notify.matches(2, TimeUnit.SECONDS);
+//
+//        MockEndpoint.assertIsSatisfied(testRoutes, 2, TimeUnit.SECONDS);
+//
+//    }
 
     @Test
-    public void testHl7TcpRouteValidMessage() throws Exception {
+    public void testHl7TcpRouteValidADTMessage() throws Exception {
 
         messagingMock.expectedMessageCount(1);
         fileMock.expectedMessageCount(1);
         NotifyBuilder notify = new NotifyBuilder(ingressCamel).whenCompleted(2).create();
-        String resp = hl7TcpProducer.requestBody((Object) createValidHl7Message(), String.class);
+        String resp = hl7TcpProducer.requestBody((Object) createValidADTMessage(), String.class);
         assertNotNull(resp);
         assertThat(resp, containsString("MSA|AA|MSGID12349876"));
         notify.matches(2, TimeUnit.SECONDS);

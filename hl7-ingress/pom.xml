@@ -1,30 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
-    <artifactId>health-care</artifactId>
     <groupId>org.jboss.fuse.examples</groupId>
+    <artifactId>health-care</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
-
   <artifactId>hl7-ingress</artifactId>
   <packaging>bundle</packaging>
   <name>Health Care POC: Ingress of HL7 Messages</name>
   <description>How to receive or ingest HL7 formatted messages over TCP/MLLP</description>
-
   <properties>
-  <environment.activemq.uri>activemq:topic:VirtualTopic.org.jboss.fuse.hl7.event</environment.activemq.uri>
-    <!-- fabric8 configurations-->
-    <fabric8.profile>healthcare-poc.hl7ingress</fabric8.profile>
-    <fabric8.parentProfiles>feature-camel</fabric8.parentProfiles>
+    <environment.activemq.uri>activemq:topic:VirtualTopic.org.jboss.fuse.hl7.event</environment.activemq.uri>
     <fabric8.features>camel-spring camel-hl7 camel-netty4</fabric8.features>
     <fabric8.bundles>mvn:${project.parent.groupId}/${project.artifactId}/${project.parent.version}</fabric8.bundles>
+    <fabric8.parentProfiles>feature-camel</fabric8.parentProfiles>
+    <fabric8.profile>healthcare-poc.hl7ingress</fabric8.profile>
   </properties>
-
   <dependencies>
-    <!-- Core camel libs-->
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-core</artifactId>
@@ -41,24 +35,18 @@
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-netty4</artifactId>
     </dependency>
-
     <dependency>
       <groupId>org.apache.activemq</groupId>
       <artifactId>activemq-camel</artifactId>
     </dependency>
-    <!-- Need access to the HAPI libs in an OSGI container-->
     <dependency>
       <groupId>ca.uhn.hapi</groupId>
       <artifactId>hapi-osgi-base</artifactId>
     </dependency>
-
-    <!-- Logging APIs-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
     </dependency>
-
-    <!-- Test dependencies -->
     <dependency>
       <groupId>org.apache.camel</groupId>
       <artifactId>camel-test-spring3</artifactId>
@@ -69,30 +57,34 @@
       <artifactId>slf4j-log4j12</artifactId>
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-netty4-http</artifactId>
+      <version>2.15.1.redhat-620133</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.camel</groupId>
+      <artifactId>camel-ftp</artifactId>
+      <version>2.15.1.redhat-620133</version>
+    </dependency>
   </dependencies>
-
   <build>
     <resources>
       <resource>
-        <directory>src/main/resources</directory>
         <filtering>true</filtering>
+        <directory>src/main/resources</directory>
       </resource>
     </resources>
-
     <plugins>
-      <!-- Camel plugin to be able to run the routes outside of a camel container-->
       <plugin>
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-maven-plugin</artifactId>
       </plugin>
-
-      <!-- bundle plugin to make the jars osgi-compatible-->
       <plugin>
         <groupId>org.apache.felix</groupId>
         <artifactId>maven-bundle-plugin</artifactId>
         <extensions>true</extensions>
-        <configuration>
-        </configuration>
+        <configuration></configuration>
       </plugin>
       <plugin>
         <groupId>io.fabric8</groupId>

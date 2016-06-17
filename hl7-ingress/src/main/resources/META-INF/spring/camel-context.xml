@@ -21,13 +21,14 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
 
+ 
   <bean id="hl7encoder" class="org.apache.camel.component.hl7.HL7MLLPNettyEncoderFactory">
-    <property name="charset" value="iso-8859-1"/>
+    <property name="charset" value="UTF-8"/>
     <property name="convertLFtoCR" value="true"/>
   </bean>
 
   <bean id="hl7decoder" class="org.apache.camel.component.hl7.HL7MLLPNettyDecoderFactory">
-    <property name="charset" value="iso-8859-1"/>
+    <property name="charset" value="UTF-8"/>
     <property name="convertLFtoCR" value="true"/>
   </bean>
 
@@ -39,28 +40,77 @@
     <property name="password" value="admin" />
   </bean>
 
+  <bean id="hl7MessageService" class="org.jboss.fuse.examples.HL7MessageService"/>
+
+  <!-- bean ref="hl7MessageService" method="lookupPatient" id="bean1"/-->
+  <!--from uri="netty4:tcp:127.0.0.1:8888"/-->
   <camelContext id="ingressCamel" xmlns="http://camel.apache.org/schema/spring">
-    <propertyPlaceholder id="props" location="META-INF/properties/application.properties"/>
-    <route id="route.ingress.in.tcp">
-      <from uri="netty4:tcp://127.0.0.1:8888?sync=true&amp;decoder=#hl7decoder&amp;encoder=#hl7encoder"/>
-      <to uri="direct:hl7Direct"/>
-    </route>
-
-    <route id="route.ingress.main">
-      <from uri="direct:hl7Direct"/>
-      <wireTap uri="direct:auditToFileSystem"/>
-      <log message="HL7 Request: ${body}"/>
-      <inOnly uri="{{camel.activemq.endpoint}}"/>
-      <transform>
-        <ref>ACK</ref>
-      </transform>
-    </route>
-
-    <route id="route.ingress.audit.filesystem">
-      <from uri="direct:auditToFileSystem"/>
-      <to uri="file://target/audit/ingress?fileName=incoming-audit-${date:now:yyyyMMdd-HH:mm:ss}.hl7" />
-    </route>
-
-  </camelContext>
+  <propertyPlaceholder location="META-INF/properties/application.properties" id="props"/>
+  <route id="route.ingress.in.tcp">
+    <from uri="netty4:tcp://127.0.0.1:8888?sync=true&amp;decoder=#hl7decoder&amp;encoder=#hl7encoder"/>
+    <to uri="direct:hl7Direct"/>
+  </route>
+  <route id="route.ingress.main">
+    <from uri="direct:hl7Direct"/>
+    <wireTap uri="direct:auditToFileSystem">
+      <body>
+        <simple></simple>
+      </body>
+    </wireTap>
+    <unmarshal>
+      <hl7/>
+    </unmarshal>
+    <log message="HL7 Message Being Processed: ${body}" loggingLevel="INFO"/>
+    <log message="MessageType: ${header.CamelHL7MessageType} and MessageTriggerEvent: ${header.CamelHL7TriggerEvent}" loggingLevel="INFO"/>
+    <choice>
+      <when>
+        <simple>${header.CamelHL7TriggerEvent} == 'A19'</simple>
+        <bean ref="hl7MessageService" method="handleA19"/>
+        <transform>
+          <ref>ACK</ref>
+        </transform>
+      </when>
+      <when>
+        <simple>${header.CamelHL7TriggerEvent} == 'A01'</simple>
+        <bean ref="hl7MessageService" method="handleA01"/>
+        <log message="Message After Handler: ${body}"/>
+        <wireTap uri="direct:hl7Anonymized">
+          <body>
+            <simple></simple>
+          </body>
+        </wireTap>
+        <transform>
+          <ref>ACK</ref>
+        </transform>
+      </when>
+      <otherwise>
+        <bean ref="hl7MessageService" method="unhandledMessage"/>
+        <transform>
+          <ref>ACK</ref>
+        </transform>
+      </otherwise>
+    </choice>
+  </route>
+  <route id="route.ingress.hl7.transformation">
+    <from uri="direct:hl7ToXMLDirect"/>
+    <marshal>
+      <hl7/>
+    </marshal>
+    <log message="HL7TransformationRoute - ${body}" loggingLevel="INFO"/>
+    <to uri="file://target/audit/ingress?fileName=outgoing-hl7-${date:now:yyyyMMdd-HH:mm:ss}.xml"/>
+  </route>
+  <route id="route.ingress.audit.filesystem">
+    <from uri="direct:auditToFileSystem"/>
+    <to uri="file:///home/rduncan/RedHat/projects/Wipro/audit/ingress?fileName=incoming-audit-${date:now:yyyyMMdd-HH:mm:ss}.hl7"/>
+  </route>
+  <route id="route.ingress.hl7.anonymized">
+    <from uri="direct:hl7Anonymized"/>
+    <log message="HL7Anonymized - ${body}" loggingLevel="INFO"/>
+    <marshal>
+      <hl7/>
+    </marshal>
+    <to uri="file:///home/rduncan/RedHat/projects/Wipro/audit/ingress?fileName=anonymized-audit-${date:now:yyyyMMdd-HH:mm:ss}.hl7"/>
+  </route>
+</camelContext>
 
 </beans>
