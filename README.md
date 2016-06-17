@@ -1,3 +1,6 @@
+
+# **_Modifications have been made to the original source for a specific POC.  This readme needs updating and will work with varying success as written._**
+
 # HL7 use cases with JBoss Fuse
 
 [HL7 over MLLP](http://www.hl7.org) is a very common transport mechanisms for systems that can speak the HL7 protocol format. [JBoss Fuse](http://www.jboss.org/products/fuse/download/) is a very powerful microservices-style integration platform and has a proven track record for building flexibile, resilient, highly available integration scenarios for critical health-care providers. Additionally, replacing legacy vendors like SeaBeyond on JCAPS is the sweet spot for these types of Fuse implementations. 
